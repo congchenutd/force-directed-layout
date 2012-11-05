@@ -10,13 +10,18 @@ class EdgeTopology;
 class EdgeStyle;
 class Node;
 
-// interface for edge
+// edge of a graph
+// a QGraphicsObject
+// topology (connectivity) is delegated to EdgeTopology
+// drawing is delegated to EdgeStyle
+// itself only concerns interaction and layout
 class Edge : public QGraphicsObject
 {
 public:
     Edge(Node* node1, Node* node2);
     void setTopology(EdgeTopology* topology);
     void setStyle   (EdgeStyle*    style);
+
     EdgeTopology* getTopology() const { return _topology; }
     Node* getNode1() const;
     Node* getNode2() const;
@@ -26,7 +31,6 @@ public:
     virtual ~Edge() {}
     virtual QRectF boundingRect() const;
     virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-
     virtual double getStrength() const { return 0.1; }   // base value of the force
 
 protected:
