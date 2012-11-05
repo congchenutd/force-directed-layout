@@ -39,41 +39,6 @@ protected:
     QPointF _newPos;
 };
 
-//class RoundNode : public LayoutableNode
-//{
-//public:
-//    enum { Type = UserType + 101 };
-//    int type() const { return Type; }
-
-//    RoundNode(int radius = 10, const QColor& brushColor = QColor(Qt::yellow), const QColor& penColor = QColor(Qt::black));
-//    int getRadius() const { return _radius; }
-//    int getWidth()  const { return getRadius() * 2; }
-
-//    virtual QRectF boundingRect() const;
-//    virtual QPainterPath shape()  const;
-//    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-
-//private:
-//    int _radius;
-//};
-
-//class RectangularNode : public LayoutableNode
-//{
-//public:
-//    enum { Type = UserType + 102 };
-//    int type() const { return Type; }
-
-//    RectangularNode(int width = 20, const QColor& brushColor = QColor(Qt::yellow), const QColor& penColor = QColor(Qt::black));
-//    int getWidth()  const { return _width; }
-
-//    virtual QRectF boundingRect() const;
-//    virtual QPainterPath shape()  const;
-//    virtual void paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-
-//private:
-//    int _width;
-//};
-
 }
 
 #endif // NODE_H
