@@ -10,6 +10,7 @@ class Edge;
 class NodeTopology;
 class NodeStyle;
 
+
 // Node in a graph
 // a QGraphicsObject
 // topology (connectivity) is delegated to NodeTopology,
@@ -18,6 +19,8 @@ class NodeStyle;
 // itself only concerns interaction and layout
 class Node : public QGraphicsObject
 {
+    typedef QList<Node*> NodeList;
+
 public:
     Node();
     NodeTopology* getTopology() const { return _topology; }
@@ -38,6 +41,14 @@ public:
     virtual QRectF       boundingRect() const;
     virtual QPainterPath shape()  const;
     virtual void         paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
+
+    bool     isRoot()       const;
+    int      getSize()      const;
+    int      getLevel()     const;
+    Node*    getParent()    const;
+    NodeList getChildren()  const;
+    NodeList getAncestors() const;
+    int      getWidth()     const;
 
 protected:
     NodeTopology* _topology;

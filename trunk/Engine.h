@@ -7,6 +7,7 @@ class QGraphicsScene;
 
 namespace ForceDirectedLayout {
 
+
 // the layout algorithm
 class Engine : public QObject
 {
@@ -25,6 +26,7 @@ protected:
 
 
 class Node;
+typedef QList<Node*> NodeList;
 
 // iterative, push and pull
 class IterativeEngine : public Engine
@@ -42,7 +44,7 @@ protected:
     virtual void timerEvent(QTimerEvent* event);   // faster than QTimer
     virtual bool step() = 0;                       // one iteration for one timer event, return true if moved
     virtual void calculateForces(Node* node);      // push and pull
-    virtual QList<Node*> getPushers(const Node* node) const = 0;
+    virtual NodeList getPushers(const Node* node) const = 0;
     virtual void push(Node* node, qreal& xMove, qreal& yMove) = 0;
     virtual void pull(Node* node, qreal& xMove, qreal& yMove);
 
@@ -63,9 +65,20 @@ public:
 protected:
     virtual bool step();
     virtual void push(Node* node, qreal& xMove, qreal& yMove);
-    virtual QList<Node*> getPushers(const Node* node) const;
+    virtual NodeList getPushers(const Node* node) const;
 };
 
+
+class LocalEngine : public IterativeEngine
+{
+public:
+    LocalEngine(QGraphicsScene* scene) : IterativeEngine(scene) {}
+
+protected:
+    virtual bool step();
+    virtual void push(Node* node, qreal& xMove, qreal& yMove);
+    virtual NodeList getPushers(const Node* node) const;
+};
 
 }
 
