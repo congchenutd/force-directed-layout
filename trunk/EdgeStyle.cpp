@@ -24,13 +24,12 @@ RegularEdgeStyle::RegularEdgeStyle(int width, const QColor& color)
 
 QRectF RegularEdgeStyle::boundingRect() const
 {
-    EdgeTopology* topology = _edge->getTopology();
-    if(topology == 0 || topology->isDangling())
+	if(_edge->isDangling())
         return QRectF();
 
     const qreal extra = _width / 2;   // half of the width of pen
-    QPointF node1Pos = topology->getNode1()->pos();
-    QPointF node2Pos = topology->getNode2()->pos();
+	QPointF node1Pos = _edge->getNode1()->pos();
+	QPointF node2Pos = _edge->getNode2()->pos();
     return QRectF(node1Pos, QSizeF(node2Pos.x() - node1Pos.x(),
                                    node2Pos.y() - node1Pos.y()))
             .normalized()
@@ -39,11 +38,10 @@ QRectF RegularEdgeStyle::boundingRect() const
 
 void RegularEdgeStyle::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-    EdgeTopology* topology = _edge->getTopology();
-    if(topology == 0 || topology->isDangling())
+	if(_edge->isDangling())
         return;
     painter->setPen(QPen(_color, _width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    painter->drawLine(topology->getNode1()->pos(), topology->getNode2()->pos());
+	painter->drawLine(_edge->getNode1()->pos(), _edge->getNode2()->pos());
 }
 
 }

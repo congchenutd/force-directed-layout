@@ -10,6 +10,7 @@ class QStyleOptionGraphicsItem;
 
 namespace ForceDirectedLayout {
 
+// draw nodes
 class NodeStyle
 {
 public:

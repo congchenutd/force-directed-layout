@@ -7,6 +7,7 @@ class QGraphicsScene;
 
 namespace ForceDirectedLayout {
 
+// the layout algorithm
 class Engine : public QObject
 {
 public:
