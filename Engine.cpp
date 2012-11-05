@@ -3,6 +3,7 @@
 #include "Node.h"
 #include <math.h>
 #include <QGraphicsScene>
+#include <QQueue>
 
 namespace ForceDirectedLayout {
 
@@ -84,9 +85,9 @@ bool GlobalEngine::step()
     return itemsMoved;
 }
 
-QList<Node*> GlobalEngine::getPushers(const Node* node) const
+NodeList GlobalEngine::getPushers(const Node* node) const
 {
-    QList<Node*> result;
+    NodeList result;
     foreach(QGraphicsItem* item, _scene->items())
         if(Node* other = dynamic_cast<Node*>(item))
             if(other != node)
@@ -110,6 +111,67 @@ void GlobalEngine::push(Node* node, qreal& xMove, qreal& yMove)
             yMove += dy / d;
         }
     }
+}
+
+
+////////////////////////////////////////////////////////////////////////////
+bool LocalEngine::step()
+{
+    bool itemsMoved = false;
+    QQueue<Node*> queue;                    // BFS
+//    queue.enqueue(view->getRoot());
+    while(!queue.isEmpty())
+    {
+        Node* node = queue.dequeue();
+
+        calculateForces(node);    // calculate
+        if(node->advance())       // move
+            itemsMoved = true;
+
+        queue << node->getChildren();
+    }
+    return itemsMoved;
+}
+
+void LocalEngine::push(Node* node, qreal& xMove, qreal& yMove)
+{
+    QList<Node*> pushers = getPushers(node);
+    foreach(Node* pusher, pushers)
+    {
+        QPointF vec = node->mapToItem(pusher, 0, 0);
+        qreal dx = vec.x() == 0.0 ? qrand() / node->getWidth()   // avoid overlapping
+                                  : vec.x();
+        qreal dy = vec.y() == 0.0 ? qrand() / node->getWidth()
+                                  : vec.y();
+
+        double d = sqrt(dx * dx + dy * dy);
+        if(d > 0)
+        {
+            double pushForce = 15*sqrt(pusher->getSize() * node->getSize());
+            if(pusher->getLevel() < node->getLevel())   // ancester
+                pushForce *= 2;
+            else                                        // sibling
+                pushForce *= 1;
+
+            double dd = qMax((double)abs(d - node->getWidth()), (double)node->getWidth());
+            xMove += pushForce * dx / dd / dd;
+            yMove += pushForce * dy / dd / dd;
+        }
+    }
+}
+
+NodeList LocalEngine::getPushers(const Node* node) const
+{
+    NodeList result;
+    if(!node->isRoot())               // siblings
+    {
+        NodeList children = node->getParent()->getChildren();
+        foreach(Node* child, children)
+            if(child != node)
+                result << child;
+    }
+    result << node->getAncestors();   // plus ancestors
+    return result;
 }
 
 

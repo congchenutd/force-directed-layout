@@ -9,13 +9,13 @@ class EdgeTopology;
 class Edge;
 class Node;
 
+typedef QList<Node*> NodeList;
+
 // The connectivity of a node
 // associates with EdgeTopology
+// applies to any graph node
 class NodeTopology
 {
-public:
-    typedef QList<EdgeTopology*> EdgeTopoList;
-
 public:
     NodeTopology();
     void  setNode(Node* node) { _node = node; }
@@ -23,12 +23,38 @@ public:
     QList<Edge*> getEdges() const;
 
     virtual ~NodeTopology() {}
-	virtual void addEdgeTopology   (EdgeTopology* edgeTopo);
-    virtual void removeEdge(EdgeTopology* edgeTopo);
+    virtual void addEdgeTopology   (EdgeTopology* edgeTopo);
+    virtual void removeEdgeTopology(EdgeTopology* edgeTopo);
+
+    virtual bool     isRoot()       const { return false; }
+    virtual int      getSize()      const { return 1;     }
+    virtual int      getLevel()     const { return -1;    }
+    virtual Node*    getParent()    const { return 0;     }
+    virtual NodeList getChildren()  const { return NodeList(); }
+    virtual NodeList getAncestors() const { return NodeList(); }
 
 protected:
-    Node*        _node;
-    EdgeTopoList _edgeTopoList;
+    Node*                _node;
+    QList<EdgeTopology*> _edgeTopoList;
+};
+
+class TreeNodeTopology : public NodeTopology
+{
+public:
+    TreeNodeTopology();
+
+    virtual bool     isRoot()       const;
+    virtual int      getLevel()     const { return _level;  }
+    virtual Node*    getParent()    const;
+    virtual NodeList getChildren()  const;
+    virtual NodeList getAncestors() const;
+
+    virtual void addEdgeTopology   (EdgeTopology* edgeTopo);
+    virtual void removeEdgeTopology(EdgeTopology* edgeTopo);
+
+protected:
+    int           _level;
+    NodeTopology* _parent;
 };
 
 }

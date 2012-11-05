@@ -61,6 +61,7 @@ bool Node::advance()
 	return true;
 }
 
+// drawing related
 QRectF Node::boundingRect() const {
     return _style->boundingRect();
 }
@@ -70,5 +71,32 @@ QPainterPath Node::shape() const {
 void Node::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget) {
     _style->paint(painter, option, widget);
 }
+
+// topology related
+bool Node::isRoot() const {
+    return _topology->isRoot();
+}
+int Node::getSize() const {
+    return _topology->getSize();
+}
+int Node::getLevel() const {
+    return _topology->getLevel();
+}
+Node *Node::getParent() const {
+    return _topology->getParent();
+}
+NodeList Node::getChildren() const {
+    return _topology->getChildren();
+}
+NodeList Node::getAncestors() const {
+    return _topology->getAncestors();
+}
+
+int Node::getWidth() const {
+    return _style->getWidth();
+}
+
+
+
 
 }
