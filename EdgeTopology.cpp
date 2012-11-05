@@ -8,8 +8,8 @@ EdgeTopology::EdgeTopology(NodeTopology* node1, NodeTopology* node2)
     : _node1(node1),
       _node2(node2)
 {
-    _node1->addEdge(this);
-    _node2->addEdge(this);
+	_node1->addEdgeTopology(this);
+	_node2->addEdgeTopology(this);
 }
 
 NodeTopology* EdgeTopology::getTheOtherTopology(const NodeTopology* node) const {

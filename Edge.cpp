@@ -11,9 +11,10 @@ namespace ForceDirectedLayout
 
 Edge::Edge(Node* node1, Node* node2)
 {
-    setTopology(new EdgeTopology(node1->getTopology(), node2->getTopology()));
-    setStyle   (new RegularEdgeStyle);
-    setZValue(qMin(_topology->getNode1()->zValue(), _topology->getNode2()->zValue()) - 1);  // behind nodes
+	setTopology(new EdgeTopology(node1->getTopology(), node2->getTopology()));  // default topo
+	setStyle   (new RegularEdgeStyle);                                          // default style
+	setZValue(qMin(_topology->getNode1()->zValue(),
+				   _topology->getNode2()->zValue()) - 1);    // place behind nodes
 }
 
 void Edge::setTopology(EdgeTopology* topology)
@@ -43,7 +44,11 @@ Node* Edge::getNode2() const {
 }
 
 Node *Edge::getTheOtherNode(const Node* node) const {
-    return getTopology()->getTheOtherNode(node);
+	return getTopology()->getTheOtherNode(node);
+}
+
+bool Edge::isDangling() const {
+	return _topology->isDangling();
 }
 
 QRectF Edge::boundingRect() const {

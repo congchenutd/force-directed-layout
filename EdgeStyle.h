@@ -11,6 +11,8 @@ class QWidget;
 namespace ForceDirectedLayout {
 
 class Edge;
+
+// Handles the drawing and style of Edge
 class EdgeStyle
 {
 public:

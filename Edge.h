@@ -12,7 +12,8 @@ class Node;
 
 // edge of a graph
 // a QGraphicsObject
-// topology (connectivity) is delegated to EdgeTopology
+// topology (connectivity) is delegated to EdgeTopology,
+// which associates with NodeTopology
 // drawing is delegated to EdgeStyle
 // itself only concerns interaction and layout
 class Edge : public QGraphicsObject
@@ -26,6 +27,7 @@ public:
     Node* getNode1() const;
     Node* getNode2() const;
     Node* getTheOtherNode(const Node* node) const;
+	bool  isDangling() const;
     void adjust();             // adjust the position according to the nodes
 
     virtual ~Edge() {}

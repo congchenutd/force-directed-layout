@@ -9,6 +9,8 @@ class EdgeTopology;
 class Edge;
 class Node;
 
+// The connectivity of a node
+// associates with EdgeTopology
 class NodeTopology
 {
 public:
@@ -17,11 +19,11 @@ public:
 public:
     NodeTopology();
     void  setNode(Node* node) { _node = node; }
-    Node*    getNode()  const { return _node; }
+	Node* getNode() const     { return _node; }
     QList<Edge*> getEdges() const;
 
     virtual ~NodeTopology() {}
-    virtual void addEdge   (EdgeTopology* edgeTopo);
+	virtual void addEdgeTopology   (EdgeTopology* edgeTopo);
     virtual void removeEdge(EdgeTopology* edgeTopo);
 
 protected:

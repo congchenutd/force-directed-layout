@@ -6,7 +6,7 @@ namespace ForceDirectedLayout {
 NodeTopology::NodeTopology()
     : _node(0) {}
 
-void NodeTopology::addEdge(EdgeTopology* edgeTopo) {
+void NodeTopology::addEdgeTopology(EdgeTopology* edgeTopo) {
     _edgeTopoList << edgeTopo;
 }
 
