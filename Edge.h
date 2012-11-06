@@ -28,12 +28,12 @@ public:
     Node* getNode2() const;
     Node* getTheOtherNode(const Node* node) const;
 	bool  isDangling() const;
-    void adjust();             // adjust the position according to the nodes
+    void  adjust();             // adjust the position according to the nodes
 
     virtual ~Edge() {}
     virtual QRectF boundingRect() const;
     virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-    virtual double getStrength() const { return 0.1; }   // base value of the force
+    virtual qreal  getStrength() const { return 0.2; }   // base value of the force
 
 protected:
     EdgeTopology* _topology;

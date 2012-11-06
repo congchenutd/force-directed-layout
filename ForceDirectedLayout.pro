@@ -20,7 +20,8 @@ SOURCES += \
     NodeTopology.cpp \
     EdgeTopology.cpp \
     NodeStyle.cpp \
-    EdgeStyle.cpp
+    EdgeStyle.cpp \
+    View.cpp
 
 HEADERS  += \
     Node.h \
@@ -29,6 +30,7 @@ HEADERS  += \
     NodeTopology.h \
     EdgeTopology.h \
     NodeStyle.h \
-    EdgeStyle.h
+    EdgeStyle.h \
+    View.h
 
 FORMS    +=
