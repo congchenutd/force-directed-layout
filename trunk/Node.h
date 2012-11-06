@@ -27,9 +27,6 @@ public:
     void setTopolopy(NodeTopology* topology);
     QList<Edge*> getEdges() const;
     void setStyle   (NodeStyle* style);
-    bool isPinned() const { return _pinned; }
-    void setPinned (bool pinned) { _pinned = pinned; }
-	bool isGrabbed() const;                // grabbed by mouse?
 
 	// first call setNewPos() to buffer the new pos,
 	// then advance() to apply the new pos
@@ -37,18 +34,29 @@ public:
     void setNewPos(const QPointF& newPos) { _newPos = newPos; }  // buffer _newPos
     bool advance();                                              // return true if moved
 
-    virtual QVariant     itemChange(GraphicsItemChange change, const QVariant& value);
-    virtual QRectF       boundingRect() const;
-    virtual QPainterPath shape()  const;
-    virtual void         paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
+    // interaction related
+    bool isPinned()  const { return _pinned; }
+    bool isGrabbed() const;                // grabbed by mouse?
+    void setPinned (bool pinned) { _pinned = pinned; }
+    virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
+    virtual void     mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
 
+    // delegated to _topology
     bool     isRoot()       const;
     int      getSize()      const;
     int      getLevel()     const;
     Node*    getParent()    const;
     NodeList getChildren()  const;
     NodeList getAncestors() const;
-    int      getWidth()     const;
+
+    // delegated to _style
+    int getWidth() const;
+    virtual QRectF       boundingRect() const;
+    virtual QPainterPath shape()  const;
+    virtual void         paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
+
+protected:
+    void startEngine();
 
 protected:
     NodeTopology* _topology;

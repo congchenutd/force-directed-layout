@@ -4,6 +4,7 @@
 #include "NodeTopology.h"
 #include "NodeStyle.h"
 #include <QGraphicsScene>
+#include <QGraphicsSceneMouseEvent>
 
 namespace ForceDirectedLayout
 {
@@ -47,10 +48,20 @@ QVariant Node::itemChange(GraphicsItemChange change, const QVariant& value)
     {
 		foreach(Edge* edge, _topology->getEdges())   // update edges' positions
             edge->adjust();
-		if(Engine* engine = Engine::getCurrent())    // run engine
-            engine->start();
+        startEngine();
     }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
+{
+    QGraphicsItem::mouseReleaseEvent(event);
+    startEngine();
+}
+
+void Node::startEngine() {
+    if(Engine* engine = Engine::getCurrent())
+        engine->start();
 }
 
 bool Node::advance()
@@ -72,6 +83,10 @@ void Node::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWid
     _style->paint(painter, option, widget);
 }
 
+int Node::getWidth() const {
+    return _style->getWidth();
+}
+
 // topology related
 bool Node::isRoot() const {
     return _topology->isRoot();
@@ -91,12 +106,6 @@ NodeList Node::getChildren() const {
 NodeList Node::getAncestors() const {
     return _topology->getAncestors();
 }
-
-int Node::getWidth() const {
-    return _style->getWidth();
-}
-
-
 
 
 }

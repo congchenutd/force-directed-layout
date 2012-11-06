@@ -18,7 +18,7 @@ class NodeTopology
 {
 public:
     NodeTopology();
-    void  setNode(Node* node) { _node = node; }
+    void  setNode(Node* node) { _node = node; }   // called by Node's cstr bia setTopology()
 	Node* getNode() const     { return _node; }
     QList<Edge*> getEdges() const;
 
@@ -26,6 +26,7 @@ public:
     virtual void addEdgeTopology   (EdgeTopology* edgeTopo);
     virtual void removeEdgeTopology(EdgeTopology* edgeTopo);
 
+    virtual void     setLevel(int level) {}
     virtual bool     isRoot()       const { return false; }
     virtual int      getSize()      const { return 1;     }
     virtual int      getLevel()     const { return -1;    }

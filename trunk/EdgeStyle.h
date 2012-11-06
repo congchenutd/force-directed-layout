@@ -17,7 +17,7 @@ class EdgeStyle
 {
 public:
     EdgeStyle(int width, const QColor& color);
-    void setEdge(Edge* edge);
+    void setEdge(Edge* edge);     // called by Edge's cstr via setStyle()
 
     virtual QRectF boundingRect() const = 0;
     virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*) = 0;

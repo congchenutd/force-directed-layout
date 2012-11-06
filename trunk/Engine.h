@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class QGraphicsScene;
+class QGraphicsView;
 
 namespace ForceDirectedLayout {
 
@@ -32,9 +32,9 @@ typedef QList<Node*> NodeList;
 class IterativeEngine : public Engine
 {
 public:
-    IterativeEngine(QGraphicsScene* scene);
+    IterativeEngine(QGraphicsView* view);
     void setRunningRate(int rate) { _rate = rate; }
-    void setSensitivity(double sensitivity) { _sensitivity = sensitivity; }
+    void setSensitivity(qreal sensitivity) { _sensitivity = sensitivity; }
 
     virtual void start();
     virtual void stop();
@@ -49,10 +49,10 @@ protected:
     virtual void pull(Node* node, qreal& xMove, qreal& yMove);
 
 protected:
-    QGraphicsScene* _scene;
-    int    _rate;
-    double _sensitivity;
-    int    _timerID;
+    QGraphicsView* _view;
+    int   _rate;
+    qreal _sensitivity;
+    int   _timerID;
 };
 
 
@@ -60,7 +60,7 @@ protected:
 class GlobalEngine : public IterativeEngine
 {
 public:
-    GlobalEngine(QGraphicsScene* scene) : IterativeEngine(scene) {}
+    GlobalEngine(QGraphicsView* view) : IterativeEngine(view) {}
 
 protected:
     virtual bool step();
@@ -69,15 +69,19 @@ protected:
 };
 
 
+class View;
 class LocalEngine : public IterativeEngine
 {
 public:
-    LocalEngine(QGraphicsScene* scene) : IterativeEngine(scene) {}
+    LocalEngine(View* view);
 
 protected:
     virtual bool step();
     virtual void push(Node* node, qreal& xMove, qreal& yMove);
     virtual NodeList getPushers(const Node* node) const;
+
+private:
+    View* _view;
 };
 
 }

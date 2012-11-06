@@ -26,7 +26,7 @@ QList<Edge*> NodeTopology::getEdges() const
 
 //////////////////////////////////////////////////////////////////
 TreeNodeTopology::TreeNodeTopology()
-    : _level(-1), _parent(0)
+    : _level(0), _parent(0)
 {
 }
 
@@ -34,14 +34,14 @@ bool TreeNodeTopology::isRoot() const {
     return getLevel() == 0;
 }
 
-Node *TreeNodeTopology::getParent() const {
-    return _parent->getNode();
+Node* TreeNodeTopology::getParent() const {
+    return _parent == 0 ? 0 : _parent->getNode();
 }
 
 NodeList TreeNodeTopology::getChildren() const
 {
     NodeList result;
-    foreach(const EdgeTopology* edgeTopo, _edgeTopoList)
+    foreach(EdgeTopology* edgeTopo, _edgeTopoList)
         if(edgeTopo->getTopology1() == this)
             result << edgeTopo->getNode2();
     return result;
@@ -65,7 +65,7 @@ void TreeNodeTopology::addEdgeTopology(EdgeTopology* edgeTopo)
     if(edgeTopo->getTopology2() == this)
     {
         _parent = edgeTopo->getTopology1();
-        _level = _parent == 0 ? -1 : _parent->getLevel() + 1;
+        _level = _parent == 0 ? 0 : _parent->getLevel() + 1;
     }
 }
 
@@ -75,7 +75,7 @@ void TreeNodeTopology::removeEdgeTopology(EdgeTopology* edgeTopo)
     if(edgeTopo->getTopology2() == this)
     {
         _parent = 0;
-        _level = -1;
+        _level = 0;
     }
 }
 
