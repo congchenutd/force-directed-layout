@@ -21,9 +21,12 @@ Engine* Engine::getCurrent() {
 //////////////////////////////////////////////////////////////////
 IterativeEngine::IterativeEngine(QGraphicsView* view)
     : _view(view),
+      _timerID(0),
       _rate(10),
-      _sensitivity(1),
-      _timerID(0)
+      _sensitivity(1.0),
+      _toughness(1.0),
+      _pullingAmplifier(1.0),
+      _pushingAmplifier(1.0)
 {}
 
 void IterativeEngine::start() {
@@ -54,19 +57,24 @@ void IterativeEngine::calculateForces(Node* node)
         return;
     }
 
-    qreal xMove = 0;
-    qreal yMove = 0;
-    push(node, xMove, yMove);
-    pull(node, xMove, yMove);
+    // calculate movement made by pulling and pushing
+    qreal dxPulling = 0;
+    qreal dyPulling = 0;
+    qreal dxPushing = 0;
+    qreal dyPushing = 0;
+    pull(node, dxPulling, dyPulling);
+    push(node, dxPushing, dyPushing);
 
-    // ignore slight move
-    if(qAbs(xMove) < _sensitivity && qAbs(yMove) < _sensitivity)
-        xMove = yMove = 0;
-    if(xMove != 0 || yMove != 0)
-        node->setNewPos(node->pos() + QPointF(xMove, yMove));
+    // normalize amplifiers, and calculate combined movement
+    qreal xMove = dxPushing * _pushingAmplifier / _pullingAmplifier - dxPulling;
+    qreal yMove = dyPushing * _pushingAmplifier / _pullingAmplifier - dyPulling;
+
+    // apply movement
+    if(qAbs(xMove) > _sensitivity && qAbs(yMove) > _sensitivity)   //ignore slight movement
+        node->setNewPos(node->pos() + QPointF(xMove * _toughness, yMove * _toughness));
 }
 
-void IterativeEngine::pull(Node* node, qreal& xMove, qreal& yMove)
+void IterativeEngine::pull(Node* node, qreal& dx, qreal& dy)
 {
     if(node == 0)
         return;
@@ -74,11 +82,11 @@ void IterativeEngine::pull(Node* node, qreal& xMove, qreal& yMove)
     foreach(Edge* edge, node->getEdges())
     {
         Node* puller = edge->getTheOtherNode(node);
-        if(puller->getLevel() <= node->getLevel())
+        if(puller->getLevel() <= node->getLevel())        // low level cannot pull high level
         {
-            QPointF vec = node->mapToItem(edge->getTheOtherNode(node), 0, 0);  // vector
-            xMove -= edge->getStrength() * vec.x();
-            yMove -= edge->getStrength() * vec.y();
+            QPointF vec = node->mapToItem(puller, 0, 0);  // vector
+            dx = vec.x();
+            dy = vec.y();
         }
     }
 }
@@ -88,7 +96,7 @@ void IterativeEngine::pull(Node* node, qreal& xMove, qreal& yMove)
 bool GlobalEngine::step()
 {
     bool itemsMoved = false;
-    foreach(QGraphicsItem* item, _view->items())
+    foreach(QGraphicsItem* item, _view->items())     // consider all nodes
         if(Node* node = dynamic_cast<Node*>(item))
         {
             calculateForces(node);
@@ -104,6 +112,7 @@ NodeList GlobalEngine::getPushers(const Node* node) const
     if(node == 0)
         return result;
 
+    // all no-lower nodes are pushers
     foreach(QGraphicsItem* item, _view->items())
         if(Node* other = dynamic_cast<Node*>(item))
             if(other != node && other->getLevel() <= node->getLevel())
@@ -123,11 +132,10 @@ void GlobalEngine::push(Node* node, qreal& xMove, qreal& yMove)
         qreal dy = vec.y();
 
         qreal distance = sqrt(dx * dx + dy * dy);
-        qreal amplifier = 10;
         if(distance > 0)
         {
-            xMove += amplifier * dx / distance;
-            yMove += amplifier * dy / distance;
+            xMove += dx / distance;
+            yMove += dy / distance;
         }
     }
 }
@@ -174,17 +182,16 @@ void LocalEngine::push(Node* node, qreal& xMove, qreal& yMove)
                                   : vec.y();
 
         qreal distance = sqrt(dx * dx + dy * dy);
-        qreal amplifier = 5;
         if(distance > 0)
         {
-            qreal pushForce = sqrt(pusher->getSize() * node->getSize()) * amplifier;
+            qreal pushForce = sqrt(pusher->getSize() * node->getSize());
             if(pusher->getLevel() < node->getLevel())   // ancester
                 pushForce *= 2;
             else                                        // sibling
                 pushForce *= 1;
 
             qreal adjustedDistance = qMax((qreal)abs(distance - node->getWidth()/2),
-                            (qreal)node->getWidth()/2);
+                                          (qreal)node->getWidth()/2);   // avoid overlapping
             xMove += pushForce * dx / adjustedDistance;
             yMove += pushForce * dy / adjustedDistance;
         }
@@ -197,11 +204,10 @@ NodeList LocalEngine::getPushers(const Node* node) const
     if(node == 0)
         return result;
 
-    if(!node->isRoot()) {               // siblings
+    if(!node->isRoot())               // siblings
         foreach(Node* child, node->getParent()->getChildren())
             if(child != node)
                 result << child;
-    }
     result << node->getAncestors();   // plus ancestors
     return result;
 }

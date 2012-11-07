@@ -46,7 +46,9 @@ int main(int argc, char *argv[])
     scene.addItem(new Edge(n1, n3));
     scene.addItem(new Edge(n1, n4));
 
-    Engine* engine = new LocalEngine(&view);
+    IterativeEngine* engine = new GlobalEngine(&view);
+    engine->setPushingAmplifier(50);
+    engine->setToughness(0.05);
     Engine::setCurrent(engine);
     engine->start();
     

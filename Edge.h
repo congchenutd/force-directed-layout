@@ -33,7 +33,6 @@ public:
     virtual ~Edge() {}
     virtual QRectF boundingRect() const;
     virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-    virtual qreal  getStrength() const { return 0.2; }   // base value of the force
 
 protected:
     EdgeTopology* _topology;
