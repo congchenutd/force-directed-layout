@@ -26,7 +26,6 @@ public:
     virtual void addEdgeTopology   (EdgeTopology* edgeTopo);
     virtual void removeEdgeTopology(EdgeTopology* edgeTopo);
 
-    virtual void     setLevel(int level) {}
     virtual bool     isRoot()       const { return false; }
     virtual int      getSize()      const { return 1;     }
     virtual int      getLevel()     const { return -1;    }

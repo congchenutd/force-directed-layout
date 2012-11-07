@@ -26,6 +26,7 @@ protected:
 
 
 class Node;
+class Edge;
 typedef QList<Node*> NodeList;
 
 // iterative, push and pull
@@ -34,7 +35,10 @@ class IterativeEngine : public Engine
 public:
     IterativeEngine(QGraphicsView* view);
     void setRunningRate(int rate) { _rate = rate; }
-    void setSensitivity(qreal sensitivity) { _sensitivity = sensitivity; }
+    void setSensitivity     (qreal sensitivity) { _sensitivity = sensitivity; }
+    void setToughness       (qreal toughness)   { _toughness   = toughness;   }
+    void setPullingAmplifier(qreal amplifier)   { _pullingAmplifier = amplifier; }
+    void setPushingAmplifier(qreal amplifier)   { _pushingAmplifier = amplifier; }
 
     virtual void start();
     virtual void stop();
@@ -46,13 +50,16 @@ protected:
     virtual void calculateForces(Node* node);      // push and pull
     virtual NodeList getPushers(const Node* node) const = 0;
     virtual void push(Node* node, qreal& xMove, qreal& yMove) = 0;
-    virtual void pull(Node* node, qreal& xMove, qreal& yMove);
+    virtual void pull(Node* node, qreal& dx, qreal& dy);
 
 protected:
     QGraphicsView* _view;
-    int   _rate;
-    qreal _sensitivity;
     int   _timerID;
+    int   _rate;             // in msec
+    qreal _sensitivity;
+    qreal _toughness;
+    qreal _pullingAmplifier;
+    qreal _pushingAmplifier;
 };
 
 
@@ -70,6 +77,8 @@ protected:
 
 
 class View;
+
+// only works with trees
 class LocalEngine : public IterativeEngine
 {
 public:
