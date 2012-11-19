@@ -18,7 +18,7 @@ class NodeTopology
 {
 public:
     NodeTopology();
-    void  setNode(Node* node) { _node = node; }   // called by Node's cstr bia setTopology()
+    void  setNode(Node* node) { _node = node; }   // called by Node's cstr via setTopology()
 	Node* getNode() const     { return _node; }
     QList<Edge*> getEdges() const;
 

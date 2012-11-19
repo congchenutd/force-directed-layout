@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
 
 	// engine
     IterativeEngine* engine = new GlobalEngine(&view);
-    engine->setPushingAmplifier(50);
-    engine->setToughness(0.05);
+    engine->setPushingAmplifier(10000);
+    engine->setToughness(0.1);
     Engine::setCurrent(engine);
     engine->start();
     

@@ -25,13 +25,9 @@ protected:
 };
 
 
-class Framer
-{
-
-};
-
 class Node;
 class Edge;
+class Framer;
 typedef QList<Node*> NodeList;
 
 // iterative, push and pull
@@ -65,6 +61,7 @@ protected:
     qreal _toughness;
     qreal _pullingAmplifier;
     qreal _pushingAmplifier;
+    Framer* _framer;
 };
 
 
@@ -97,6 +94,23 @@ protected:
 
 private:
     View* _view;
+};
+
+// for bounding the nodes within a frame
+class Framer
+{
+public:
+    virtual void checkFrame(Node* node, qreal& xMove, qreal& yMove) = 0;
+};
+
+class RepellingFramer : public Framer
+{
+public:
+    RepellingFramer(QGraphicsView* view);
+    virtual void checkFrame(Node* node, qreal& xMove, qreal& yMove);
+
+protected:
+    QGraphicsView* _view;
 };
 
 }

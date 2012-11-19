@@ -26,7 +26,8 @@ IterativeEngine::IterativeEngine(QGraphicsView* view)
       _sensitivity(1.0),
       _toughness(1.0),
       _pullingAmplifier(1.0),
-      _pushingAmplifier(1.0)
+      _pushingAmplifier(1.0),
+      _framer(new RepellingFramer(view))
 {}
 
 void IterativeEngine::start() {
@@ -57,7 +58,7 @@ void IterativeEngine::calculateForces(Node* node)
         return;
     }
 
-    // calculate movement made by pulling and pushing
+    // calculate movement by pulling and pushing
     qreal dxPulling = 0;
     qreal dyPulling = 0;
     qreal dxPushing = 0;
@@ -69,8 +70,10 @@ void IterativeEngine::calculateForces(Node* node)
     qreal xMove = dxPushing * _pushingAmplifier / _pullingAmplifier - dxPulling;
     qreal yMove = dyPushing * _pushingAmplifier / _pullingAmplifier - dyPulling;
 
+    _framer->checkFrame(node, xMove, yMove);
+
     // apply movement
-    if(qAbs(xMove) > _sensitivity && qAbs(yMove) > _sensitivity)   //ignore slight movement
+    if(qAbs(xMove) > _sensitivity && qAbs(yMove) > _sensitivity)   // ignore slight movement
         node->setNewPos(node->pos() + QPointF(xMove * _toughness, yMove * _toughness));
 }
 
@@ -131,11 +134,11 @@ void GlobalEngine::push(Node* node, qreal& xMove, qreal& yMove)
         qreal dx = vec.x();
         qreal dy = vec.y();
 
-        qreal distance = sqrt(dx * dx + dy * dy);
+        qreal distance = (dx * dx + dy * dy);
         if(distance > 0)
         {
-            xMove += dx / distance;
-            yMove += dy / distance;
+            xMove += pusher->getSize() * node->getSize() * dx / distance;
+            yMove += pusher->getSize() * node->getSize() * dy / distance;
         }
     }
 }
@@ -181,10 +184,10 @@ void LocalEngine::push(Node* node, qreal& xMove, qreal& yMove)
         qreal dy = vec.y() == 0.0 ? qrand() / node->getWidth()
                                   : vec.y();
 
-        qreal distance = sqrt(dx * dx + dy * dy);
+        qreal distance = (dx * dx + dy * dy);
         if(distance > 0)
         {
-			qreal pushForce = sqrt((double)pusher->getSize() * node->getSize());
+            qreal pushForce = pusher->getSize() * node->getSize();
             if(pusher->getLevel() < node->getLevel())   // ancester
                 pushForce *= 2;
             else                                        // sibling
@@ -210,6 +213,34 @@ NodeList LocalEngine::getPushers(const Node* node) const
                 result << child;
     result << node->getAncestors();   // plus ancestors
     return result;
+}
+
+
+////////////////////////////////////////////////////////////////
+RepellingFramer::RepellingFramer(QGraphicsView* view)
+    : _view(view)
+{
+}
+
+void RepellingFramer::checkFrame(Node* node, qreal& xMove, qreal& yMove)
+{
+    if(_view == 0 || node == 0)
+        return;
+
+    foreach(QGraphicsItem* item, _view->items())
+        if(FrameEdge* frameEdge = dynamic_cast<FrameEdge*>(item))
+        {
+            QPointF vec = frameEdge->force(node);
+            qreal dx = vec.x();
+            qreal dy = vec.y();
+
+            qreal distance = (dx * dx + dy * dy);
+            if(0 < distance && distance < 100)
+            {
+                xMove -= 1000 * dx / distance / distance;
+                yMove -= 1000 * dy / distance / distance;
+            }
+        }
 }
 
 

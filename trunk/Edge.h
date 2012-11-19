@@ -48,7 +48,7 @@ public:
 public:
 	FrameEdge(int x1, int y1, int x2, int y2, Direction direction,
 			  int width = 1, const QColor& color = QColor(Qt::black));
-	qreal distance(Node* node) const;
+    QPointF force(Node* node) const;
 
 	virtual QRectF boundingRect() const;
 	virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
@@ -60,18 +60,6 @@ protected:
 	QPointF   _end2;
 	Direction _direction;
 };
-
-//class Frame : public QGraphicsObject
-//{
-//public:
-//	Frame(const QPointF& end1, const QPointF& end2,
-//		  int width = 1, const QColor& color = QColor(Qt::black));
-//	virtual QRectF boundingRect() const;
-//	virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
-
-//protected:
-
-//};
 
 }
 
