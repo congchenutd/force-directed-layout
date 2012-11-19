@@ -104,7 +104,7 @@ NodeList Node::getChildren() const {
     return _topology->getChildren();
 }
 NodeList Node::getAncestors() const {
-    return _topology->getAncestors();
+	return _topology->getAncestors();
 }
 
 

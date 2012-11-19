@@ -184,7 +184,7 @@ void LocalEngine::push(Node* node, qreal& xMove, qreal& yMove)
         qreal distance = sqrt(dx * dx + dy * dy);
         if(distance > 0)
         {
-            qreal pushForce = sqrt(pusher->getSize() * node->getSize());
+			qreal pushForce = sqrt((double)pusher->getSize() * node->getSize());
             if(pusher->getLevel() < node->getLevel())   // ancester
                 pushForce *= 2;
             else                                        // sibling

@@ -65,4 +65,41 @@ void Edge::adjust() {
 }
 
 
+/////////////////////////////////////////////////
+FrameEdge::FrameEdge(int x1, int y1, int x2, int y2,
+					 Direction direction, int width, const QColor &color)
+	: _end1(x1, y1), _end2(x2, y2), _direction(direction), _width(width), _color(color)
+{
+}
+
+qreal FrameEdge::distance(Node* node) const
+{
+	switch(_direction)
+	{
+	case TOP:
+		return node->pos().y() - _end1.y();
+	case BOTTOM:
+		return _end1.y() - node->pos().y();
+	case LEFT:
+		return _end1.x() - node->pos().x();
+	default:  // RIGHT
+		return node->pos().x() - _end1.x();
+	}
+}
+
+QRectF FrameEdge::boundingRect() const
+{
+	const qreal extra = _width / 2;   // half of the width of pen
+	return QRectF(_end1, QSizeF(_end2.x() - _end1.x(),
+								_end2.y() - _end1.y()))
+			.normalized()
+			.adjusted(-extra, -extra, extra, extra);
+}
+
+void FrameEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
+{
+	painter->setPen(QPen(_color, _width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+	painter->drawLine(_end1, _end2);
+}
+
 }
