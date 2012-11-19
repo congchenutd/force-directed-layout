@@ -8,7 +8,7 @@ class QGraphicsView;
 namespace ForceDirectedLayout {
 
 
-// the layout algorithm
+// Interface for layout algorithms
 class Engine : public QObject
 {
 public:
@@ -24,6 +24,11 @@ protected:
     static Engine* _currentEngine;
 };
 
+
+class Framer
+{
+
+};
 
 class Node;
 class Edge;
@@ -78,6 +83,7 @@ protected:
 
 class View;
 
+// A multi-scale algorithm
 // only works with trees
 class LocalEngine : public IterativeEngine
 {
