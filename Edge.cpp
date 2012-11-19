@@ -72,18 +72,18 @@ FrameEdge::FrameEdge(int x1, int y1, int x2, int y2,
 {
 }
 
-qreal FrameEdge::distance(Node* node) const
+QPointF FrameEdge::force(Node* node) const
 {
 	switch(_direction)
 	{
 	case TOP:
-		return node->pos().y() - _end1.y();
+        return QPointF(0, qMax(node->pos().y() - _end1.y(), 0.0));
 	case BOTTOM:
-		return _end1.y() - node->pos().y();
+        return QPointF(0, qMax(_end1.y() - node->pos().y(), 0.0));
 	case LEFT:
-		return _end1.x() - node->pos().x();
+        return QPointF(qMax(_end1.x() - node->pos().x(), 0.0), 0);
 	default:  // RIGHT
-		return node->pos().x() - _end1.x();
+        return QPointF(qMax(node->pos().x() - _end1.x(), 0.0), 0);
 	}
 }
 
