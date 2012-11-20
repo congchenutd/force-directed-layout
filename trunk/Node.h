@@ -65,6 +65,6 @@ protected:
     QPointF _newPos;
 };
 
-}
+} // namespace
 
 #endif // NODE_H

@@ -32,4 +32,4 @@ bool EdgeTopology::isDangling() const {
     return _node1 == 0 || _node2 == 0;
 }
 
-}
+} // namespace

@@ -80,5 +80,4 @@ void TreeNodeTopology::removeEdgeTopology(EdgeTopology* edgeTopo)
 }
 
 
-
-}
+} // namespace

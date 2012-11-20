@@ -57,6 +57,6 @@ protected:
     NodeTopology* _parent;
 };
 
-}
+} // namespace
 
 #endif // NODETOPOLOGY_H

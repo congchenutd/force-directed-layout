@@ -29,6 +29,6 @@ protected:
     NodeTopology* _node2;
 };
 
-}
+} // namespace
 
 #endif // EDGETOPOLOGY_H

@@ -11,8 +11,9 @@ namespace ForceDirectedLayout
 
 Edge::Edge(Node* node1, Node* node2)
 {
-	setTopology(new EdgeTopology(node1->getTopology(), node2->getTopology()));  // default topo
-	setStyle   (new RegularEdgeStyle);                                          // default style
+    setTopology(new EdgeTopology(node1->getTopology(),
+                                 node2->getTopology()));     // default topo
+    setStyle   (new RegularEdgeStyle);                       // default style
 	setZValue(qMin(_topology->getNode1()->zValue(),
 				   _topology->getNode2()->zValue()) - 1);    // place behind nodes
 }
@@ -65,26 +66,36 @@ void Edge::adjust() {
 }
 
 
-/////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 FrameEdge::FrameEdge(int x1, int y1, int x2, int y2,
 					 Direction direction, int width, const QColor &color)
-	: _end1(x1, y1), _end2(x2, y2), _direction(direction), _width(width), _color(color)
+    : _end1(x1, y1),
+      _end2(x2, y2),
+      _direction(direction),
+      _width(width),
+      _color(color)
+{}
+
+QPointF FrameEdge::vectorFrom(const Node* node) const
 {
+    return (_direction == TOP || _direction == BOTTOM) ?
+                QPointF(0, _end1.y() - node->pos().y())
+              : QPointF(_end1.x() - node->pos().x(), 0);
 }
 
-QPointF FrameEdge::force(Node* node) const
+bool FrameEdge::isInside(const QPointF& point) const
 {
-	switch(_direction)
-	{
-	case TOP:
-        return QPointF(0, qMax(node->pos().y() - _end1.y(), 0.0));
-	case BOTTOM:
-        return QPointF(0, qMax(_end1.y() - node->pos().y(), 0.0));
-	case LEFT:
-        return QPointF(qMax(_end1.x() - node->pos().x(), 0.0), 0);
-	default:  // RIGHT
-        return QPointF(qMax(node->pos().x() - _end1.x(), 0.0), 0);
-	}
+    switch(_direction)
+    {
+    case TOP:
+        return point.y() > _end1.y();
+    case BOTTOM:
+        return point.y() < _end1.y();
+    case LEFT:
+        return point.x() > _end1.x();
+    default:  // RIGHT
+        return point.x() < _end1.x();
+    }
 }
 
 QRectF FrameEdge::boundingRect() const
@@ -102,4 +113,4 @@ void FrameEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidge
 	painter->drawLine(_end1, _end2);
 }
 
-}
+} // namespace

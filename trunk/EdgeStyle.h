@@ -37,6 +37,6 @@ public:
     virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
 };
 
-}
+} // namespace
 
 #endif // EDGESTYLE_H
