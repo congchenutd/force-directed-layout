@@ -40,6 +40,7 @@ protected:
 };
 
 
+// edge of a frame, which defines the boundary of a graph
 class FrameEdge : public QGraphicsObject
 {
 public:
@@ -48,7 +49,8 @@ public:
 public:
 	FrameEdge(int x1, int y1, int x2, int y2, Direction direction,
 			  int width = 1, const QColor& color = QColor(Qt::black));
-    QPointF force(Node* node) const;
+    QPointF vectorFrom(const Node* node) const;    // a vector from the node to the edge
+    bool    isInside(const QPointF& point) const;  // is the point on the inner side of the frame?
 
 	virtual QRectF boundingRect() const;
 	virtual void   paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*);
@@ -61,6 +63,6 @@ protected:
 	Direction _direction;
 };
 
-}
+} // namespace
 
 #endif // EDGE_H

@@ -19,6 +19,6 @@ protected:
     Node* _root;
 };
 
-}
+} // namespace
 
 #endif // VIEW_H

@@ -57,6 +57,6 @@ private:
     int _width;
 };
 
-}
+} // namespace
 
 #endif // NODESTYLE_H

@@ -10,4 +10,4 @@ View::View(QWidget* parent)
 {}
 
 
-}
+} // namespace

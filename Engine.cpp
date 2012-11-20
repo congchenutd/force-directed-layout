@@ -2,6 +2,7 @@
 #include "Edge.h"
 #include "Node.h"
 #include "View.h"
+#include "BoundaryGuard.h"
 #include <math.h>
 #include <QGraphicsScene>
 #include <QQueue>
@@ -27,7 +28,7 @@ IterativeEngine::IterativeEngine(QGraphicsView* view)
       _toughness(1.0),
       _pullingAmplifier(1.0),
       _pushingAmplifier(1.0),
-      _framer(new RepellingFramer(view))
+      _boundaryGuard(new AdhesiveBoundaryGuard(view))
 {}
 
 void IterativeEngine::start() {
@@ -59,18 +60,18 @@ void IterativeEngine::calculateForces(Node* node)
     }
 
     // calculate movement by pulling and pushing
-    qreal dxPulling = 0;
-    qreal dyPulling = 0;
     qreal dxPushing = 0;
     qreal dyPushing = 0;
-    pull(node, dxPulling, dyPulling);
+    qreal dxPulling = 0;
+    qreal dyPulling = 0;
     push(node, dxPushing, dyPushing);
+    pull(node, dxPulling, dyPulling);
 
     // normalize amplifiers, and calculate combined movement
     qreal xMove = dxPushing * _pushingAmplifier / _pullingAmplifier - dxPulling;
     qreal yMove = dyPushing * _pushingAmplifier / _pullingAmplifier - dyPulling;
 
-    _framer->checkFrame(node, xMove, yMove);
+    _boundaryGuard->guard(node, xMove, yMove);
 
     // apply movement
     if(qAbs(xMove) > _sensitivity && qAbs(yMove) > _sensitivity)   // ignore slight movement
@@ -216,32 +217,4 @@ NodeList LocalEngine::getPushers(const Node* node) const
 }
 
 
-////////////////////////////////////////////////////////////////
-RepellingFramer::RepellingFramer(QGraphicsView* view)
-    : _view(view)
-{
-}
-
-void RepellingFramer::checkFrame(Node* node, qreal& xMove, qreal& yMove)
-{
-    if(_view == 0 || node == 0)
-        return;
-
-    foreach(QGraphicsItem* item, _view->items())
-        if(FrameEdge* frameEdge = dynamic_cast<FrameEdge*>(item))
-        {
-            QPointF vec = frameEdge->force(node);
-            qreal dx = vec.x();
-            qreal dy = vec.y();
-
-            qreal distance = (dx * dx + dy * dy);
-            if(0 < distance && distance < 100)
-            {
-                xMove -= 1000 * dx / distance / distance;
-                yMove -= 1000 * dy / distance / distance;
-            }
-        }
-}
-
-
-}
+} // namespace

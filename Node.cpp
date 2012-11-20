@@ -108,4 +108,4 @@ NodeList Node::getAncestors() const {
 }
 
 
-}
+} // namespace

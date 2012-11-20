@@ -44,4 +44,4 @@ void RegularEdgeStyle::paint(QPainter* painter, const QStyleOptionGraphicsItem*,
 	painter->drawLine(_edge->getNode1()->pos(), _edge->getNode2()->pos());
 }
 
-}
+} // namespace

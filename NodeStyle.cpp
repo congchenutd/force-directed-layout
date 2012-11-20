@@ -66,4 +66,4 @@ void RectangularNodeStyle::paint(QPainter* painter, const QStyleOptionGraphicsIt
     painter->drawRect(boundingRect());
 }
 
-}
+} // namespace

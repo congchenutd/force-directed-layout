@@ -21,7 +21,8 @@ SOURCES += \
     EdgeTopology.cpp \
     NodeStyle.cpp \
     EdgeStyle.cpp \
-    View.cpp
+    View.cpp \
+    BoundaryGuard.cpp
 
 HEADERS  += \
     Node.h \
@@ -31,6 +32,7 @@ HEADERS  += \
     EdgeTopology.h \
     NodeStyle.h \
     EdgeStyle.h \
-    View.h
+    View.h \
+    BoundaryGuard.h
 
 FORMS    +=
