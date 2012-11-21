@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
     view.show();
 
 	// frame
-    scene.addItem(new FrameEdge(-300, -300,  300, -300, FrameEdge::TOP));
-    scene.addItem(new FrameEdge(-300,  300,  300,  300, FrameEdge::BOTTOM));
-    scene.addItem(new FrameEdge(-300, -300, -300,  300, FrameEdge::LEFT));
-    scene.addItem(new FrameEdge( 300, -300,  300,  300, FrameEdge::RIGHT));
+    scene.addItem(new FrameEdge(-150, -300,  150, -300, FrameEdge::TOP));
+    scene.addItem(new FrameEdge(-150,  300,  150,  300, FrameEdge::BOTTOM));
+    scene.addItem(new FrameEdge(-150, -300, -150,  300, FrameEdge::LEFT));
+    scene.addItem(new FrameEdge( 150, -300,  150,  300, FrameEdge::RIGHT));
 
     // root
     Node* root = new Node;
@@ -36,23 +36,45 @@ int main(int argc, char *argv[])
     root->setPos(0, 0);
     view.setRoot(root);
 
-    // other nodes
-    qsrand(QTime::currentTime().msec());
-    for(int i = 0; i < 30; ++i)
+    for(int i = 0; i < 6; ++i)
     {
         Node* node = new Node;
-        QColor color(qrand() % 255, qrand() % 255, qrand() % 255);
-        NodeStyle* style;
-        if(qrand() % 2 == 0)
-            style = new RoundNodeStyle      (qrand() % 10 + 10, color);
-        else
-            style = new RectangularNodeStyle(qrand() % 10 + 10, color);
+        NodeStyle* style = new RoundNodeStyle();
         node->setStyle(style);
         node->setTopolopy(new TreeNodeTopology);
-        node->setPos(300 - qrand() % 600, 300 - qrand() % 600);
+        node->setPos(100 - qrand() % 200, 100 - qrand() % 200);
         scene.addItem(node);
         scene.addItem(new Edge(root, node));
+
+        for(int j=0; j<5; ++j)
+        {
+            Node* node2 = new Node;
+            NodeStyle* style = new RoundNodeStyle(10, QColor(Qt::blue).lighter());
+            node2->setStyle(style);
+            node2->setTopolopy(new TreeNodeTopology);
+            node2->setPos(100 - qrand() % 200, 100 - qrand() % 200);
+            scene.addItem(node2);
+            scene.addItem(new Edge(node, node2));
+        }
     }
+
+    // other nodes
+//    qsrand(QTime::currentTime().msec());
+//    for(int i = 0; i < 10; ++i)
+//    {
+//        Node* node = new Node;
+//        QColor color(qrand() % 255, qrand() % 255, qrand() % 255);
+//        NodeStyle* style;
+//        if(qrand() % 2 == 0)
+//            style = new RoundNodeStyle      (qrand() % 10 + 5, color);
+//        else
+//            style = new RectangularNodeStyle(qrand() % 10 + 10, color);
+//        node->setStyle(style);
+//        node->setTopolopy(new TreeNodeTopology);
+//        node->setPos(300 - qrand() % 600, 300 - qrand() % 600);
+//        scene.addItem(node);
+//        scene.addItem(new Edge(root, node));
+//    }
 
 //    Node* n2 = new Node;
 //    Node* n3 = new Node;
@@ -79,6 +101,7 @@ int main(int argc, char *argv[])
     IterativeEngine* engine = new GlobalEngine(&view);
     engine->setPushingAmplifier(1000);
     engine->setToughness(0.1);
+    engine->setSensitivity(0.01);
     Engine::setCurrent(engine);
     engine->start();
     

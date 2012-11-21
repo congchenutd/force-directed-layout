@@ -40,7 +40,8 @@ protected:
 };
 
 
-// edge of a frame, which defines the boundary of a graph
+// edge of a rectangular frame, which defines the boundary of a graph
+// NOTE: I assume the frame is rectangular and the edges are orthogonal to the coordinates
 class FrameEdge : public QGraphicsObject
 {
 public:

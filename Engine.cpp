@@ -74,7 +74,7 @@ void IterativeEngine::calculateForces(Node* node)
     _boundaryGuard->guard(node, xMove, yMove);
 
     // apply movement
-    if(qAbs(xMove) > _sensitivity && qAbs(yMove) > _sensitivity)   // ignore slight movement
+    if(qAbs(xMove) > _sensitivity || qAbs(yMove) > _sensitivity)   // ignore slight movement
         node->setNewPos(node->pos() + QPointF(xMove * _toughness, yMove * _toughness));
 }
 
