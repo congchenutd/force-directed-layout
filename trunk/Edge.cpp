@@ -88,13 +88,13 @@ bool FrameEdge::isInside(const QPointF& point) const
     switch(_direction)
     {
     case TOP:
-        return point.y() > _end1.y();
+        return point.y() >= _end1.y();
     case BOTTOM:
-        return point.y() < _end1.y();
+        return point.y() <= _end1.y();
     case LEFT:
-        return point.x() > _end1.x();
+        return point.x() >= _end1.x();
     default:  // RIGHT
-        return point.x() < _end1.x();
+        return point.x() <= _end1.x();
     }
 }
 
@@ -109,7 +109,7 @@ QRectF FrameEdge::boundingRect() const
 
 void FrameEdge::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
 {
-	painter->setPen(QPen(_color, _width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    painter->setPen(QPen(_color, _width, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 	painter->drawLine(_end1, _end2);
 }
 
