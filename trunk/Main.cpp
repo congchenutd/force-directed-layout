@@ -8,6 +8,7 @@
 #include "EdgeStyle.h"
 #include "View.h"
 #include "NodeTopology.h"
+#include "BoundaryGuard.h"
 
 using namespace ForceDirectedLayout;
 
@@ -24,10 +25,14 @@ int main(int argc, char *argv[])
     view.show();
 
 	// frame
-    scene.addItem(new FrameEdge(-150, -300,  150, -300, FrameEdge::TOP));
-    scene.addItem(new FrameEdge(-150,  300,  150,  300, FrameEdge::BOTTOM));
-    scene.addItem(new FrameEdge(-150, -300, -150,  300, FrameEdge::LEFT));
-    scene.addItem(new FrameEdge( 150, -300,  150,  300, FrameEdge::RIGHT));
+//    scene.addItem(new FrameEdge(-150, -300,  150, -300, FrameEdge::TOP));
+//    scene.addItem(new FrameEdge(-150,  300,  150,  300, FrameEdge::BOTTOM));
+//    scene.addItem(new FrameEdge(-150, -300, -150,  300, FrameEdge::LEFT));
+//    scene.addItem(new FrameEdge( 150, -300,  150,  300, FrameEdge::RIGHT));
+
+    RectangularBoundary boundary;
+    boundary.setRect(-150, -300, 300, 600);
+    scene.addItem(&boundary);
 
     // root
     Node* root = new Node;
@@ -36,7 +41,7 @@ int main(int argc, char *argv[])
     root->setPos(0, 0);
     view.setRoot(root);
 
-    for(int i = 0; i < 6; ++i)
+    for(int i = 0; i < 1; ++i)
     {
         Node* node = new Node;
         NodeStyle* style = new RoundNodeStyle();
@@ -46,16 +51,16 @@ int main(int argc, char *argv[])
         scene.addItem(node);
         scene.addItem(new Edge(root, node));
 
-        for(int j=0; j<5; ++j)
-        {
-            Node* node2 = new Node;
-            NodeStyle* style = new RoundNodeStyle(10, QColor(Qt::blue).lighter());
-            node2->setStyle(style);
-            node2->setTopolopy(new TreeNodeTopology);
-            node2->setPos(100 - qrand() % 200, 100 - qrand() % 200);
-            scene.addItem(node2);
-            scene.addItem(new Edge(node, node2));
-        }
+//        for(int j = 0; j < 10; ++j)
+//        {
+//            Node* node2 = new Node;
+//            NodeStyle* style = new RoundNodeStyle(10, QColor(Qt::blue).lighter());
+//            node2->setStyle(style);
+//            node2->setTopolopy(new TreeNodeTopology);
+//            node2->setPos(100 - qrand() % 200, 100 - qrand() % 200);
+//            scene.addItem(node2);
+//            scene.addItem(new Edge(node, node2));
+//        }
     }
 
     // other nodes
@@ -99,9 +104,11 @@ int main(int argc, char *argv[])
 
 	// engine
     IterativeEngine* engine = new GlobalEngine(&view);
-    engine->setPushingAmplifier(1000);
+    engine->setPushingAmplifier(2000);
     engine->setToughness(0.1);
     engine->setSensitivity(0.01);
+    engine->setDistortion(0.5);
+    engine->setBoundaryGuard(new AdhesiveBoundaryGuard(&boundary));
     Engine::setCurrent(engine);
     engine->start();
     
