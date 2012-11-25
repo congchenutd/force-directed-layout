@@ -30,8 +30,11 @@ int main(int argc, char *argv[])
 //    scene.addItem(new FrameEdge(-150, -300, -150,  300, FrameEdge::LEFT));
 //    scene.addItem(new FrameEdge( 150, -300,  150,  300, FrameEdge::RIGHT));
 
-    RectangularBoundary boundary;
-    boundary.setRect(-150, -300, 300, 600);
+    TriangularBoundary boundary;
+    QPolygonF triangle;
+//    triangle << QPointF(0, -300) << QPointF(-300, 300) << QPointF(300, 300);
+    triangle << QPointF(-150, -300) << QPointF(-150, 300) << QPointF(150, 300) << QPointF(150, -300);
+    boundary.setPolygon(triangle);
     scene.addItem(&boundary);
 
     // root
