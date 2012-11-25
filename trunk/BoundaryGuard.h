@@ -20,14 +20,29 @@ public:
 
 class PolygonalBoundary : public Boundary
 {
+public:
+    virtual QPointF getStopPoint(const QLineF& escapingPath) const;
+
 protected:
     virtual QPointF getStopPoint(const QLineF& edge, const QLineF& escapingPath) const;
+    virtual QList<QLineF> getEdges() const = 0;
+
+private:
+    qreal mod2PI(qreal angle) const;
 };
 
-class RectangularBoundary : public Boundary, public QGraphicsRectItem
+class TriangularBoundary : public PolygonalBoundary, public QGraphicsPolygonItem
 {
 public:
-    virtual bool isInside(const QPointF& point)  const;
+    virtual bool isInside(const QPointF& point) const;
+    virtual QList<QLineF> getEdges() const;
+};
+
+class RectangularBoundary : public PolygonalBoundary, public QGraphicsRectItem
+{
+public:
+    virtual bool isInside(const QPointF& point) const;
+    virtual QList<QLineF> getEdges() const;
 };
 
 // interface for bounding the nodes within a frame
