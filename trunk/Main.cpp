@@ -25,16 +25,14 @@ int main(int argc, char *argv[])
     view.show();
 
 	// frame
-//    scene.addItem(new FrameEdge(-150, -300,  150, -300, FrameEdge::TOP));
-//    scene.addItem(new FrameEdge(-150,  300,  150,  300, FrameEdge::BOTTOM));
-//    scene.addItem(new FrameEdge(-150, -300, -150,  300, FrameEdge::LEFT));
-//    scene.addItem(new FrameEdge( 150, -300,  150,  300, FrameEdge::RIGHT));
+//    TriangularBoundary boundary;
+//    QPolygonF triangle;
+//    triangle << QPointF(0, 0) << QPointF(0, 500) << QPointF(500, 0);
+//    boundary.setPolygon(triangle);
 
-    TriangularBoundary boundary;
-    QPolygonF triangle;
-//    triangle << QPointF(0, -300) << QPointF(-300, 300) << QPointF(300, 300);
-    triangle << QPointF(-150, -300) << QPointF(-150, 300) << QPointF(150, 300) << QPointF(150, -300);
-    boundary.setPolygon(triangle);
+    RectangularBoundary boundary;
+    boundary.setRect(-150, -300, 300, 600);
+
     scene.addItem(&boundary);
 
     // root
@@ -107,7 +105,7 @@ int main(int argc, char *argv[])
 
 	// engine
     IterativeEngine* engine = new GlobalEngine(&view);
-    engine->setPushingAmplifier(2000);
+    engine->setPushingAmplifier(500);
     engine->setToughness(0.1);
     engine->setSensitivity(0.01);
     engine->setDistortion(0.5);

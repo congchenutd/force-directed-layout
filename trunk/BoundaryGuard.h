@@ -12,23 +12,25 @@ class Node;
 class Boundary
 {
 public:
-    bool isEscaping(const QLineF& path);
+    bool isEscaping(const QLineF& path) const;
 
-    virtual bool    isInside(const QPointF& point)  const = 0;
-    virtual QPointF getStopPoint(const QLineF& escapingPath) const = 0;
+    virtual void adjustEscapingPath(QLineF& escapingPath) const = 0;
+    virtual bool isInside(const QPointF& point)  const = 0;
 };
 
 class PolygonalBoundary : public Boundary
 {
 public:
-    virtual QPointF getStopPoint(const QLineF& escapingPath) const;
+    virtual void adjustEscapingPath(QLineF& escapingPath) const;
 
 protected:
-    virtual QPointF getStopPoint(const QLineF& edge, const QLineF& escapingPath) const;
+    void adjustEscapingPath(const QLineF& edge, QLineF& escapingPath) const;
     virtual QList<QLineF> getEdges() const = 0;
 
 private:
     qreal mod2PI(qreal angle) const;
+    bool isEscaping(const QLineF& edge, const QLineF& path) const;
+    bool isInside  (const QLineF& edge, const QPointF& point) const;
 };
 
 class TriangularBoundary : public PolygonalBoundary, public QGraphicsPolygonItem

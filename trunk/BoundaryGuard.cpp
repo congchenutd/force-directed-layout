@@ -4,27 +4,31 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <QGraphicsItem>
+#include <QDebug>
 
 namespace ForceDirectedLayout
 {
 
-bool Boundary::isEscaping(const QLineF& path) {
+bool Boundary::isEscaping(const QLineF& path) const {
     return isInside(path.p1()) && !isInside(path.p2());
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-QPointF PolygonalBoundary::getStopPoint(const QLineF& escapingPath) const
+void PolygonalBoundary::adjustEscapingPath(QLineF& escapingPath) const
 {
     foreach(const QLineF& edge, getEdges())
     {
-        QPointF crossing;
-        if(edge.intersect(escapingPath, &crossing) == QLineF::BoundedIntersection)
-            return getStopPoint(edge, escapingPath);
+        if(isEscaping(edge, escapingPath))
+        {
+            QPointF target = escapingPath.p2();
+            adjustEscapingPath(edge, escapingPath);
+            QPointF result = escapingPath.p2();
+//            qDebug() << "target = " << target << "stop at = " << result;
+        }
     }
-    return escapingPath.p2();
 }
 
-QPointF PolygonalBoundary::getStopPoint(const QLineF& edge, const QLineF& escapingPath) const
+void PolygonalBoundary::adjustEscapingPath(const QLineF& edge, QLineF& escapingPath) const
 {
     qreal alpha = escapingPath.angleTo(edge);
     qreal beta  = mod2PI(alpha + 270);
@@ -37,7 +41,7 @@ QPointF PolygonalBoundary::getStopPoint(const QLineF& edge, const QLineF& escapi
 
     QPointF normalCrossing;
     if(edge.intersect(normalComponent, &normalCrossing) == QLineF::NoIntersection)
-        return escapingPath.p2();
+        return;
 
     QLineF normalComponentCut(escapingPath.p1(), normalCrossing);
 
@@ -56,7 +60,7 @@ QPointF PolygonalBoundary::getStopPoint(const QLineF& edge, const QLineF& escapi
     y += normalComponentCut.p2().y() - normalComponentCut.p1().y();
     y += parallelComponent.p2().y() - parallelComponent.p1().y();
 
-    return QPointF(x, y);
+    escapingPath.setP2(QPointF(x, y));
 }
 
 qreal PolygonalBoundary::mod2PI(qreal angle) const
@@ -65,6 +69,16 @@ qreal PolygonalBoundary::mod2PI(qreal angle) const
     while(result >= 360)
         result -= 360;
     return result;
+}
+
+bool PolygonalBoundary::isEscaping(const QLineF& edge, const QLineF& path) const {
+    return isInside(edge, path.p1()) && !isInside(edge, path.p2());
+}
+
+bool PolygonalBoundary::isInside(const QLineF& edge, const QPointF& point) const
+{
+    QLineF edgeStart2Point(edge.p1(), point);
+    return edge.angleTo(edgeStart2Point) <= 180;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////
@@ -101,25 +115,6 @@ QList<QLineF> RectangularBoundary::getEdges() const
 }
 
 
-//QPointF RectangularBoundary::getCrossing(const QLineF& path) const
-//{
-//    QList<QLineF> edges;
-//    edges << QLineF(rect().topRight(),    rect().topLeft())
-//          << QLineF(rect().topLeft(),     rect().bottomLeft())
-//          << QLineF(rect().bottomLeft(),  rect().bottomRight())
-//          << QLineF(rect().bottomRight(), rect().topRight());
-
-//    foreach(const QLineF& edge, edges)
-//    {
-//        QPointF crossing;
-//        if(edge.intersect(path, &crossing) == QLineF::BoundedIntersection)
-//            return crossing;
-//    }
-
-//    return QPointF(INT_MAX, INT_MAX);
-//}
-
-
 /////////////////////////////////////////////////////////////////////////////
 BoundaryGuard::BoundaryGuard(Boundary* boundary)
     : _boundary(boundary)
@@ -134,34 +129,12 @@ void AdhesiveBoundaryGuard::guard(Node* node, qreal& xMove, qreal& yMove)
     if(_view == 0 || node == 0)
         return;
 
-//    foreach(QGraphicsItem* item, _view->items())
-//        if(FrameEdge* frameEdge = dynamic_cast<FrameEdge*>(item))  // an edge
-//        {
-//            QPointF oldPos = node->pos();
-//            QPointF newPos = oldPos + QPointF(xMove, yMove);
-//            if(frameEdge->isInside(oldPos) && !frameEdge->isInside(newPos))  // moving out
-//            {
-//                QPointF vec = frameEdge->vectorFrom(node);
-//                qreal dx = vec.x();
-//                qreal dy = vec.y();
-//                if(dx != 0)        // left or right edge
-//                    xMove = dx;    // movement on y is ignored
-//                if(dy != 0)        // top or bottom edge
-//                    yMove = dy;    // movement on x is ignored
-//            }
-//        }
-
     QLineF path(node->pos(), node->pos() + QPointF(xMove, yMove));
     if(_boundary->isEscaping(path))
     {
-//        QPointF crossing = _boundary->getCrossing(path);
-//        qreal dx = crossing.x() - node->x();
-//        qreal dy = crossing.y() - node->y();
-//        xMove = dx;
-//        yMove = dy;
-        QPointF stop = _boundary->getStopPoint(path);
-        xMove = stop.x() - node->x();
-        yMove = stop.y() - node->y();
+        _boundary->adjustEscapingPath(path);
+        xMove = path.x2() - path.x1();
+        yMove = path.y2() - path.y1();
     }
 }
 
