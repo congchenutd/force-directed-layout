@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QGraphicsView>
 #include <QTime>
+#include <QDir>
 #include "Node.h"
 #include "Edge.h"
 #include "Engine.h"
@@ -11,6 +12,34 @@
 #include "BoundaryGuard.h"
 
 using namespace ForceDirectedLayout;
+
+void loadDir(Node* parent, const QString& path, QGraphicsScene& scene)
+{
+    QFileInfoList entries = QDir(path).entryInfoList(QStringList(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    foreach(const QFileInfo& entry, entries)
+    {
+        if(entry.isDir())
+        {
+            Node* node = new Node;
+            node->setStyle(new RoundNodeStyle(10));
+            node->setTopolopy(new TreeNodeTopology);
+            node->setPos(100 - qrand() % 200, 100 - qrand() % 200);
+            scene.addItem(node);
+            scene.addItem(new Edge(parent, node));
+            loadDir(node, entry.absoluteFilePath(), scene);
+        }
+        else
+        {
+            Node* node = new Node;
+            node->setStyle(new RoundNodeStyle(10, Qt::green));
+            node->setTopolopy(new TreeNodeTopology);
+            node->setPos(100 - qrand() % 200, 100 - qrand() % 200);
+            scene.addItem(node);
+            scene.addItem(new Edge(parent, node));
+        }
+    }
+
+}
 
 int main(int argc, char *argv[])
 {
@@ -25,15 +54,18 @@ int main(int argc, char *argv[])
     view.show();
 
 	// frame
-//    TriangularBoundary boundary;
-//    QPolygonF triangle;
-//    triangle << QPointF(0, 0) << QPointF(0, 500) << QPointF(500, 0);
-//    boundary.setPolygon(triangle);
+    TriangularBoundary boundary;
+    QPolygonF triangle;
+    triangle << QPointF(0, 0) << QPointF(0, 300) << QPointF(300, 0);
+    boundary.setPolygon(triangle);
 
-    RectangularBoundary boundary;
-    boundary.setRect(-150, -300, 300, 600);
+//    RectangularBoundary boundary;
+////    boundary.setPen(QPen(Qt::transparent));
+//    boundary.setRect(-200, -300, 250, 500);
 
     scene.addItem(&boundary);
+
+    qsrand(QTime::currentTime().msec());
 
     // root
     Node* root = new Node;
@@ -41,6 +73,8 @@ int main(int argc, char *argv[])
     scene.addItem(root);
     root->setPos(0, 0);
     view.setRoot(root);
+
+//    loadDir(root, "../Movie", scene);
 
     for(int i = 0; i < 1; ++i)
     {
@@ -105,10 +139,10 @@ int main(int argc, char *argv[])
 
 	// engine
     IterativeEngine* engine = new GlobalEngine(&view);
-    engine->setPushingAmplifier(500);
+    engine->setPushingAmplifier(1000);
     engine->setToughness(0.1);
     engine->setSensitivity(0.01);
-    engine->setDistortion(0.5);
+//    engine->setDistortion(0.5);
     engine->setBoundaryGuard(new AdhesiveBoundaryGuard(&boundary));
     Engine::setCurrent(engine);
     engine->start();
