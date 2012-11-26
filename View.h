@@ -14,6 +14,9 @@ public:
     explicit View(QWidget* parent = 0);
     void setRoot(Node* root) { _root = root; }
     Node* getRoot() const { return _root; }
+
+protected:
+    virtual void keyPressEvent(QKeyEvent* event);
     
 protected:
     Node* _root;

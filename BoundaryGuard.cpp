@@ -23,7 +23,7 @@ void PolygonalBoundary::adjustEscapingPath(QLineF& escapingPath) const
             QPointF target = escapingPath.p2();
             adjustEscapingPath(edge, escapingPath);
             QPointF result = escapingPath.p2();
-//            qDebug() << "target = " << target << "stop at = " << result;
+            qDebug() << "target = " << target << "stop at = " << result;
         }
     }
 }
