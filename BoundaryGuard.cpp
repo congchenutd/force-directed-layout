@@ -24,6 +24,7 @@ void PolygonalBoundary::adjustEscapingPath(QLineF& escapingPath) const
             adjustEscapingPath(edge, escapingPath);
             QPointF result = escapingPath.p2();
             qDebug() << "target = " << target << "stop at = " << result;
+            Q_ASSERT(result.x() >= 0.0);
         }
     }
 }
@@ -63,6 +64,7 @@ void PolygonalBoundary::adjustEscapingPath(const QLineF& edge, QLineF& escapingP
     escapingPath.setP2(QPointF(x, y));
 }
 
+// return angle % 360
 qreal PolygonalBoundary::mod2PI(qreal angle) const
 {
     qreal result = angle;
