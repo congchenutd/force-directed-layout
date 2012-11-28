@@ -60,10 +60,13 @@ int main(int argc, char *argv[])
     boundary.setPolygon(triangle);
 
 //    RectangularBoundary boundary;
-////    boundary.setPen(QPen(Qt::transparent));
-//    boundary.setRect(-200, -300, 250, 500);
+//    boundary.setPen(QPen(Qt::transparent));
+//    boundary.setRect(-150, -300, 280, 580);
 
     scene.addItem(&boundary);
+
+//    scene.addRect(-170, -320, 320, 620, QPen(Qt::black, 2));
+
 
     qsrand(QTime::currentTime().msec());
 
@@ -139,10 +142,10 @@ int main(int argc, char *argv[])
 
 	// engine
     IterativeEngine* engine = new GlobalEngine(&view);
-    engine->setPushingAmplifier(1000);
+    engine->setPushingAmplifier(1300);
     engine->setToughness(0.1);
     engine->setSensitivity(0.01);
-//    engine->setDistortion(0.5);
+    engine->setDistortion(0.5);
     engine->setBoundaryGuard(new AdhesiveBoundaryGuard(&boundary));
     Engine::setCurrent(engine);
     engine->start();
