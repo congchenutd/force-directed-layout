@@ -1,78 +1,54 @@
 #ifndef BOUNDARYGUARD_H
 #define BOUNDARYGUARD_H
 
-#include <QGraphicsView>
 #include <QGraphicsRectItem>
 
 namespace ForceDirectedLayout
 {
 
+// a rectangular boundary
+class Boundary : public QGraphicsRectItem
+{
+public:
+    bool isEscaping(const QLineF&  path)  const;
+    bool isInside  (const QPointF& point) const;
+    QList<QLineF> getEdges() const;
+    qreal getAspectRatio() const;
+
+    static bool isInside(const QLineF& edge, const QPointF& point);
+};
+
+
 class Node;
 
-class Boundary
-{
-public:
-    bool isEscaping(const QLineF& path) const;
-
-    virtual void adjustEscapingPath(QLineF& escapingPath) const = 0;
-    virtual bool isInside(const QPointF& point)  const = 0;
-};
-
-class PolygonalBoundary : public Boundary
-{
-public:
-    virtual void adjustEscapingPath(QLineF& escapingPath) const;
-
-protected:
-    void adjustEscapingPath(const QLineF& edge, QLineF& escapingPath) const;
-    virtual QList<QLineF> getEdges() const = 0;
-
-private:
-    qreal mod2PI(qreal angle) const;
-    bool isEscaping(const QLineF& edge, const QLineF& path) const;
-    bool isInside  (const QLineF& edge, const QPointF& point) const;
-};
-
-class TriangularBoundary : public PolygonalBoundary, public QGraphicsPolygonItem
-{
-public:
-    virtual bool isInside(const QPointF& point) const;
-    virtual QList<QLineF> getEdges() const;
-};
-
-class RectangularBoundary : public PolygonalBoundary, public QGraphicsRectItem
-{
-public:
-    virtual bool isInside(const QPointF& point) const;
-    virtual QList<QLineF> getEdges() const;
-};
-
-// interface for bounding the nodes within a frame
+// interface for boundary constraints
 class BoundaryGuard
 {
 public:
     BoundaryGuard(Boundary* boundary = 0);
-    virtual void guard(Node* node, qreal& xMove, qreal& yMove) = 0;
+    Boundary* getBoundary() const { return _boundary; }
+    void guard(Node* node, qreal& xMove, qreal& yMove);
 
 protected:
+    // how does edge block the escaping path
+    virtual void adjustEscapingPath(const QLineF& edge, QLineF& escapingPath) {}
+
+private:
     Boundary* _boundary;
 };
 
 class NullBoundaryGuard : public BoundaryGuard
-{
-public:
-    virtual void guard(Node* node, qreal& xMove, qreal& yMove) {}
-};
+{};
 
-// any nodes escaping the frame will adhere to the boundaries
+// the component perpendicular to the escaped edge will be blocked
+// the other component is unaffected
 class AdhesiveBoundaryGuard : public BoundaryGuard
 {
 public:
     AdhesiveBoundaryGuard(Boundary* boundary);
-    virtual void guard(Node* node, qreal& xMove, qreal& yMove);
 
 protected:
-    QGraphicsView* _view;
+    virtual void adjustEscapingPath(const QLineF& edge, QLineF& escapingPath);
 };
 
 }  // namespace

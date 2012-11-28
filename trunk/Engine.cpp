@@ -28,9 +28,16 @@ IterativeEngine::IterativeEngine(QGraphicsView* view)
       _toughness(1.0),
       _pullingAmplifier(1.0),
       _pushingAmplifier(1.0),
-      _distortion(1.0),
       _boundaryGuard(new NullBoundaryGuard)
 {}
+
+qreal IterativeEngine::getDistortion() const {
+    return _boundaryGuard == 0
+            ? 1.0
+            : _boundaryGuard->getBoundary() == 0
+              ? 1.0
+              : _boundaryGuard->getBoundary()->getAspectRatio();
+}
 
 void IterativeEngine::start() {
     if(_timerID == 0)
@@ -72,7 +79,7 @@ void IterativeEngine::calculateForces(Node* node)
 
     // apply movement
     if(qAbs(xMove) > _sensitivity || qAbs(yMove) > _sensitivity)   // ignore slight movement
-        node->setNewPos(node->pos() + QPointF(xMove * _toughness, yMove * _toughness));
+        node->setNewPos(node->pos() + QPointF(xMove, yMove) * _toughness);
 }
 
 QPointF IterativeEngine::pull(Node* node) const
@@ -108,7 +115,7 @@ QPointF IterativeEngine::push(Node* node) const
         xMove += force.x();
         yMove += force.y();
     }
-    return QPointF(xMove * _distortion, yMove);
+    return QPointF(xMove * getDistortion(), yMove);
 }
 
 ///////////////////////////////////////////////////////////////////////////

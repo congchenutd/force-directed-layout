@@ -41,8 +41,8 @@ public:
     void setToughness       (qreal toughness)     { _toughness   = toughness;      }
     void setPullingAmplifier(qreal amplifier)     { _pullingAmplifier = amplifier; }
     void setPushingAmplifier(qreal amplifier)     { _pushingAmplifier = amplifier; }
-    void setDistortion      (qreal x2yDistortion) { _distortion = x2yDistortion;   }
     void setBoundaryGuard(BoundaryGuard* boundaryGuard) { _boundaryGuard = boundaryGuard; }
+    qreal getDistortion() const;
 
     virtual void start();
     virtual void stop();
@@ -65,7 +65,6 @@ protected:
     qreal _toughness;
     qreal _pullingAmplifier;
     qreal _pushingAmplifier;
-    qreal _distortion;
     BoundaryGuard* _boundaryGuard;
 };
 

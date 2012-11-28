@@ -15,7 +15,8 @@ using namespace ForceDirectedLayout;
 
 void loadDir(Node* parent, const QString& path, QGraphicsScene& scene)
 {
-    QFileInfoList entries = QDir(path).entryInfoList(QStringList(), QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    QFileInfoList entries = QDir(path).entryInfoList(QStringList(),
+                                                     QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     foreach(const QFileInfo& entry, entries)
     {
         if(entry.isDir())
@@ -54,21 +55,13 @@ int main(int argc, char *argv[])
     view.show();
 
 	// frame
-    TriangularBoundary boundary;
-    QPolygonF triangle;
-    triangle << QPointF(0, 0) << QPointF(0, 300) << QPointF(300, 0);
-    boundary.setPolygon(triangle);
-
-//    RectangularBoundary boundary;
+    Boundary boundary;
 //    boundary.setPen(QPen(Qt::transparent));
-//    boundary.setRect(-150, -300, 280, 580);
+    boundary.setRect(-150, -300, 280, 580);
 
     scene.addItem(&boundary);
 
 //    scene.addRect(-170, -320, 320, 620, QPen(Qt::black, 2));
-
-
-    qsrand(QTime::currentTime().msec());
 
     // root
     Node* root = new Node;
@@ -77,8 +70,9 @@ int main(int argc, char *argv[])
     root->setPos(0, 0);
     view.setRoot(root);
 
-//    loadDir(root, "../Movie", scene);
+    loadDir(root, "../Movie", scene);
 
+    qsrand(QTime::currentTime().msec());
     for(int i = 0; i < 1; ++i)
     {
         Node* node = new Node;
@@ -145,7 +139,6 @@ int main(int argc, char *argv[])
     engine->setPushingAmplifier(1300);
     engine->setToughness(0.1);
     engine->setSensitivity(0.01);
-    engine->setDistortion(0.5);
     engine->setBoundaryGuard(new AdhesiveBoundaryGuard(&boundary));
     Engine::setCurrent(engine);
     engine->start();
