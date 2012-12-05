@@ -59,6 +59,10 @@ void Node::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
     startEngine();
 }
 
+void Node::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event) {
+    _pinned = !_pinned;
+}
+
 void Node::startEngine() {
     if(Engine* engine = Engine::getCurrent())
         engine->start();

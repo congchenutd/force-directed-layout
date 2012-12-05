@@ -34,6 +34,15 @@ bool TreeNodeTopology::isRoot() const {
     return getLevel() == 0;
 }
 
+int TreeNodeTopology::getSize() const
+{
+    int result = 1;
+    foreach(const EdgeTopology* edgeTopo, _edgeTopoList)
+        if(edgeTopo->getTopology1() == this)
+            result ++;
+    return result;
+}
+
 Node* TreeNodeTopology::getParent() const {
     return _parent == 0 ? 0 : _parent->getNode();
 }
