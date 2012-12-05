@@ -40,6 +40,7 @@ public:
     void setPinned (bool pinned) { _pinned = pinned; }
     virtual QVariant itemChange(GraphicsItemChange change, const QVariant& value);
     virtual void     mouseReleaseEvent(QGraphicsSceneMouseEvent* event);
+    virtual void     mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event);
 
     // delegated to _topology
     bool     isRoot()       const;

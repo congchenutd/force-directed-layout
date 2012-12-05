@@ -44,6 +44,7 @@ public:
     TreeNodeTopology();
 
     virtual bool     isRoot()       const;
+    virtual int      getSize()      const;
     virtual int      getLevel()     const { return _level;  }
     virtual Node*    getParent()    const;
     virtual NodeList getChildren()  const;

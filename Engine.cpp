@@ -32,11 +32,12 @@ IterativeEngine::IterativeEngine(QGraphicsView* view)
 {}
 
 qreal IterativeEngine::getDistortion() const {
-    return _boundaryGuard == 0
-            ? 1.0
-            : _boundaryGuard->getBoundary() == 0
-              ? 1.0
-              : _boundaryGuard->getBoundary()->getAspectRatio();
+//    return _boundaryGuard == 0
+//            ? 1.0
+//            : _boundaryGuard->getBoundary() == 0
+//              ? 1.0
+//              : _boundaryGuard->getBoundary()->getAspectRatio();
+    return 1.0;
 }
 
 void IterativeEngine::start() {
@@ -148,6 +149,9 @@ NodeList GlobalEngine::getPushers(const Node* node) const
 
 QPointF GlobalEngine::push(Node* node, Node* pusher) const
 {
+    if(node == 0 || pusher == 0)
+        return QPointF();
+
     QPointF vec = node->mapToItem(pusher, 0, 0);
     qreal dx = vec.x();
     qreal dy = vec.y();
@@ -155,8 +159,8 @@ QPointF GlobalEngine::push(Node* node, Node* pusher) const
     qreal distance = (dx * dx + dy * dy);
     if(distance > 0)
     {
-        qreal xMove = pusher->getSize() * node->getSize() * dx / distance;
-        qreal yMove = pusher->getSize() * node->getSize() * dy / distance;
+        qreal xMove = dx / distance;
+        qreal yMove = dy / distance;
         return QPointF(xMove, yMove);
     }
     return QPointF();
@@ -164,75 +168,74 @@ QPointF GlobalEngine::push(Node* node, Node* pusher) const
 
 
 ////////////////////////////////////////////////////////////////////////////
-//LocalEngine::LocalEngine(View *view)
-//    : IterativeEngine(view), _view(view)
-//{}
+LocalEngine::LocalEngine(View *view)
+    : IterativeEngine(view), _view(view)
+{}
 
-//bool LocalEngine::step()
-//{
-//    Node* root = _view->getRoot();
-//    if(root == 0)
-//        return false;
+bool LocalEngine::step()
+{
+    Node* root = _view->getRoot();
+    if(root == 0)
+        return false;
 
-//    bool itemsMoved = false;
-//    QQueue<Node*> queue;                    // BFS
-//    queue.enqueue(root);
-//    while(!queue.isEmpty())
-//    {
-//        Node* node = queue.dequeue();
+    bool itemsMoved = false;
+    QQueue<Node*> queue;                    // BFS
+    queue.enqueue(root);
+    while(!queue.isEmpty())
+    {
+        Node* node = queue.dequeue();
 
-//        calculateForces(node);    // calculate
-//        if(node->advance())       // move
-//            itemsMoved = true;
+        calculateForces(node);    // calculate
+        if(node->advance())       // move
+            itemsMoved = true;
 
-//        queue << node->getChildren();
-//    }
-//    return itemsMoved;
-//}
+        queue << node->getChildren();
+    }
+    return itemsMoved;
+}
 
-//void LocalEngine::push(Node* node, qreal& xMove, qreal& yMove)
-//{
-//    if(node == 0)
-//        return;
+NodeList LocalEngine::getPushers(const Node* node) const
+{
+    NodeList result;
+    if(node == 0)
+        return result;
 
-//    foreach(Node* pusher, getPushers(node))
-//    {
-//        QPointF vec = node->mapToItem(pusher, 0, 0);
-//        qreal dx = vec.x() == 0.0 ? qrand() / node->getWidth()   // avoid overlapping
-//                                  : vec.x();
-//        qreal dy = vec.y() == 0.0 ? qrand() / node->getWidth()
-//                                  : vec.y();
+    if(!node->isRoot())               // siblings
+        foreach(Node* child, node->getParent()->getChildren())
+            if(child != node)
+                result << child;
+    result << node->getAncestors();   // plus ancestors
+    return result;
+}
 
-//        qreal distance = (dx * dx + dy * dy);
-//        if(distance > 0)
-//        {
-//            qreal pushForce = pusher->getSize() * node->getSize();
-//            if(pusher->getLevel() < node->getLevel())   // ancester
-//                pushForce *= 2;
-//            else                                        // sibling
-//                pushForce *= 1;
+QPointF LocalEngine::push(Node* node, Node* pusher) const
+{
+    if(node == 0 || pusher == 0)
+        return QPointF();
 
-//            qreal adjustedDistance = qMax((qreal)abs(distance - node->getWidth()/2),
-//                                          (qreal)node->getWidth()/2);   // avoid overlapping
-//            xMove += pushForce * dx / adjustedDistance;
-//            yMove += pushForce * dy / adjustedDistance;
-//        }
-//    }
-//}
+    QPointF vec = node->mapToItem(pusher, 0, 0);
+    qreal dx = vec.x() == 0.0 ? qrand() / node->getWidth()   // avoid overlapping
+                              : vec.x();
+    qreal dy = vec.y() == 0.0 ? qrand() / node->getWidth()
+                              : vec.y();
 
-//NodeList LocalEngine::getPushers(const Node* node) const
-//{
-//    NodeList result;
-//    if(node == 0)
-//        return result;
+    qreal distance = sqrt(dx * dx + dy * dy);
+    if(distance > 0)
+    {
+        qreal pushForce = sqrt(pusher->getSize() * node->getSize());
+        if(pusher->getLevel() < node->getLevel())   // ancester
+            pushForce *= 2;
+        else                                        // sibling
+            pushForce *= 1;
 
-//    if(!node->isRoot())               // siblings
-//        foreach(Node* child, node->getParent()->getChildren())
-//            if(child != node)
-//                result << child;
-//    result << node->getAncestors();   // plus ancestors
-//    return result;
-//}
+        qreal adjustedDistance = qMax((qreal)abs(distance - node->getWidth()/2),
+                                      (qreal)node->getWidth()/2);   // avoid overlapping
+        qreal xMove = pushForce * dx / adjustedDistance / adjustedDistance;
+        qreal yMove = pushForce * dy / adjustedDistance / adjustedDistance;
+        return QPointF(xMove, yMove);
+    }
+    return QPointF();
+}
 
 
 } // namespace

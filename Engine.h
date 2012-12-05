@@ -86,19 +86,19 @@ class View;
 
 // A multi-scale algorithm
 // only works with trees
-//class LocalEngine : public IterativeEngine
-//{
-//public:
-//    LocalEngine(View* view);
+class LocalEngine : public IterativeEngine
+{
+public:
+    LocalEngine(View* view);
 
-//protected:
-//    virtual bool step();
-//    virtual void push(Node* node, qreal& xMove, qreal& yMove);
-//    virtual NodeList getPushers(const Node* node) const;
+protected:
+    virtual bool step();
+    virtual NodeList getPushers(const Node* node) const;
+    virtual QPointF push(Node* node, Node* pusher) const;
 
-//private:
-//    View* _view;
-//};
+private:
+    View* _view;
+};
 
 
 } // namespace

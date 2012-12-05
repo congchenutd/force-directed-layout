@@ -56,12 +56,12 @@ int main(int argc, char *argv[])
 
 	// frame
     Boundary boundary;
-//    boundary.setPen(QPen(Qt::transparent));
+    boundary.setPen(QPen(Qt::transparent));
     boundary.setRect(-150, -300, 280, 580);
 
     scene.addItem(&boundary);
 
-//    scene.addRect(-170, -320, 320, 620, QPen(Qt::black, 2));
+    scene.addRect(-170, -320, 320, 620, QPen(Qt::black, 2));
 
     // root
     Node* root = new Node;
@@ -83,16 +83,16 @@ int main(int argc, char *argv[])
         scene.addItem(node);
         scene.addItem(new Edge(root, node));
 
-//        for(int j = 0; j < 10; ++j)
-//        {
-//            Node* node2 = new Node;
-//            NodeStyle* style = new RoundNodeStyle(10, QColor(Qt::blue).lighter());
-//            node2->setStyle(style);
-//            node2->setTopolopy(new TreeNodeTopology);
-//            node2->setPos(100 - qrand() % 200, 100 - qrand() % 200);
-//            scene.addItem(node2);
-//            scene.addItem(new Edge(node, node2));
-//        }
+        for(int j = 0; j < 10; ++j)
+        {
+            Node* node2 = new Node;
+            NodeStyle* style = new RoundNodeStyle(10, QColor(Qt::green));
+            node2->setStyle(style);
+            node2->setTopolopy(new TreeNodeTopology);
+            node2->setPos(100 - qrand() % 200, 100 - qrand() % 200);
+            scene.addItem(node2);
+            scene.addItem(new Edge(node, node2));
+        }
     }
 
     // other nodes
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 
 	// engine
     IterativeEngine* engine = new GlobalEngine(&view);
-    engine->setPushingAmplifier(1300);
+    engine->setPushingAmplifier(1000);
     engine->setToughness(0.1);
     engine->setSensitivity(0.01);
     engine->setBoundaryGuard(new AdhesiveBoundaryGuard(&boundary));
